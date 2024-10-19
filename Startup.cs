@@ -28,6 +28,31 @@ namespace InterviewTest
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactApp",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:3000")
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+            });
+
+            services.AddControllers();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +67,14 @@ namespace InterviewTest
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+            app.UseCors("AllowAllOrigins"); // Enable CORS
+            app.UseCors("AllowReactApp");
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers(); // Ensure that controllers are mapped
+            });
 
             app.UseEndpoints(endpoints =>
             {
